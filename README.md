@@ -37,6 +37,11 @@ cp .env.example .env
 - `ANTHROPIC_API_KEY`: Anthropic API 密钥（可选）
 - `TAVILY_API_KEY`: Tavily 搜索 API 密钥（可选）
 
+**⚠️ 安全注意事项**：
+- `.env` 文件已被 `.gitignore` 保护，不会被提交到 Git 仓库
+- 永远不要将包含真实 API 密钥的 `.env` 文件提交到 GitHub
+- 如果意外提交了敏感文件，请使用 [git-crypt](https://github.com/AGWA/git-crypt) 或删除历史记录
+
 ### 运行项目
 
 ```bash
