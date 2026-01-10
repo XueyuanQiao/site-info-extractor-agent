@@ -76,7 +76,7 @@ class SiteExtractorAgent:
         # 优先使用 Google Gemini
         if self.config.get("google_api_key") and GEMINI_AVAILABLE:
             return ChatGoogleGenerativeAI(
-                model=self.config.get("model_name", "gemini-2.5-flash-exp"),
+                model=self.config.get("model_name", "gemini-2.5-flash"),
                 temperature=self.config.get("temperature", 0.0),
                 api_key=self.config["google_api_key"]
             )

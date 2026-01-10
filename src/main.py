@@ -161,9 +161,6 @@ async def main():
             console.print("[red]警告: 未检测到 API Key，请在 .env 文件中配置[/red]")
             console.print("[dim]可以使用 GOOGLE_API_KEY、OPENAI_API_KEY 或 ANTHROPIC_API_KEY[/dim]\n")
 
-        # 运行基本测试
-        await test_agent()
-
         # 进入交互模式
         await interactive_mode()
     except (KeyboardInterrupt, asyncio.CancelledError):
