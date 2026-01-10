@@ -83,9 +83,14 @@ site-info-extractor-agent/
 
 ## 支持的模型
 
-- **Google Gemini**: gemini-1.5-flash（默认）、gemini-1.5-pro
+- **Google Gemini**: gemini-2.5-flash-exp（默认）、gemini-1.5-flash、gemini-1.5-pro、gemini-pro
 - **OpenAI**: gpt-4o-mini、gpt-4o、gpt-3.5-turbo
 - **Anthropic**: claude-3-5-sonnet-20241022、claude-3-opus-20240229
+
+**注意**：
+- 如果遇到模型未找到错误（404 NOT_FOUND），请尝试其他 Gemini 模型
+- 访问 [Google AI Models](https://ai.google.dev/models) 查看可用模型列表
+- 某些模型可能需要在 Google AI Studio 中手动启用
 
 ## 开发说明
 

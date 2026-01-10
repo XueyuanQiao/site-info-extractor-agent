@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     langchain_project: str = "site-info-extractor"
     
     # 模型配置
-    model_name: str = "gemini-1.5-flash"
+    model_name: str = "gemini-2.5-flash"
     temperature: float = 0.0
     max_tokens: int = 2000
     
