@@ -69,7 +69,7 @@ test-results/
 *.temp
 *.bak
 
-# API 密钥和机密文件（额外保护）
+# API 密钥和隐私数据
 *_key.*
 *_secret.*
 *_api_key.*

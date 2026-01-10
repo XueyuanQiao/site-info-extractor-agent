@@ -3,6 +3,11 @@ Site Info Extractor Agent 主入口
 提供命令行交互和测试功能
 """
 
+import sys
+import os
+# 将项目根目录添加到模块搜索路径
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
 import asyncio
 import warnings
 from rich.console import Console
@@ -17,7 +22,7 @@ warnings.filterwarnings(
 )
 
 from config.settings import settings
-from agents.extractor_agent import SiteExtractorAgent
+from src.agents.extractor_agent import SiteExtractorAgent
 
 console = Console()
 
@@ -54,20 +59,38 @@ async def test_agent():
     """测试 Agent 基本功能"""
     try:
         console.print("[yellow]正在初始化 Agent...[/yellow]")
-        
-        agent = SiteExtractorAgent({
-            "model": settings.model_name,
-            "openai_api_key": settings.openai_api_key
-        })
-        
+
+        # 构建配置字典
+        config = {
+            "model_name": settings.model_name,
+            "temperature": settings.temperature,
+            "max_tokens": settings.max_tokens,
+        }
+
+        # 添加可用的 API Key
+        if settings.openai_api_key:
+            config["openai_api_key"] = settings.openai_api_key
+        elif settings.anthropic_api_key:
+            config["anthropic_api_key"] = settings.anthropic_api_key
+        else:
+            raise ValueError("未找到可用的 API Key，请在 .env 文件中配置 OPENAI_API_KEY 或 ANTHROPIC_API_KEY")
+
+        agent: SiteExtractorAgent = SiteExtractorAgent(config)
+
         console.print("[green]✓ Agent 初始化成功[/green]")
-        
-        # TODO: 添加更多测试逻辑
-        # result = await agent.extract("https://example.com")
-        # console.print(result)
-        
+
+        # 测试提取功能
+        test_url = "https://example.com"
+        console.print(f"[yellow]正在测试提取: {test_url}[/yellow]")
+        result = await agent.extract(test_url)
+        console.print("[green]✓ 提取完成[/green]")
+        import json
+        console.print_json(json.dumps(result, ensure_ascii=False, indent=2))
+
     except Exception as e:
         console.print(f"[red]✗ Agent 初始化失败: {e}[/red]")
+        import traceback
+        console.print(f"[red]{traceback.format_exc()}[/red]")
         raise
 
 
@@ -75,33 +98,49 @@ async def interactive_mode():
     """交互式模式"""
     console.print("\n[bold]交互式模式[/bold]")
     console.print("输入 URL 进行提取，输入 'quit' 或 'exit' 退出\n")
-    
-    agent = SiteExtractorAgent({
-        "model": settings.model_name,
-        "openai_api_key": settings.openai_api_key
-    })
-    
+
+    # 构建配置字典
+    config = {
+        "model_name": settings.model_name,
+        "temperature": settings.temperature,
+        "max_tokens": settings.max_tokens,
+    }
+
+    # 添加可用的 API Key
+    if settings.openai_api_key:
+        config["openai_api_key"] = settings.openai_api_key
+    elif settings.anthropic_api_key:
+        config["anthropic_api_key"] = settings.anthropic_api_key
+    else:
+        console.print("[red]未找到可用的 API Key，无法启动交互模式[/red]")
+        return
+
+    agent = SiteExtractorAgent(config)
+
     while True:
         try:
             url = console.input("[cyan]请输入 URL > [/cyan]").strip()
-            
+
             if url.lower() in ['quit', 'exit', 'q']:
                 console.print("[yellow]再见！[/yellow]")
                 break
-            
+
             if not url:
                 continue
-            
+
             console.print(f"[yellow]正在提取: {url}[/yellow]")
-            # result = await agent.extract(url)
-            # console.print(result)
-            console.print("[dim]TODO: 实现提取逻辑[/dim]")
-            
+            result = await agent.extract(url)
+            console.print("[green]✓ 提取完成[/green]")
+            import json
+            console.print_json(json.dumps(result, ensure_ascii=False, indent=2))
+
         except KeyboardInterrupt:
             console.print("\n[yellow]再见！[/yellow]")
             break
         except Exception as e:
             console.print(f"[red]错误: {e}[/red]")
+            import traceback
+            console.print(f"[red]{traceback.format_exc()}[/red]")
 
 
 async def main():

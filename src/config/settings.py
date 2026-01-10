@@ -4,20 +4,19 @@
 """
 
 from pydantic_settings import BaseSettings
-from typing import Optional
 
 
 class Settings(BaseSettings):
     """应用设置类"""
     
     # API Keys
-    openai_api_key: Optional[str] = None
-    anthropic_api_key: Optional[str] = None
-    tavily_api_key: Optional[str] = None
+    openai_api_key: str | None = None
+    anthropic_api_key: str | None = None
+    tavily_api_key: str | None = None
     
     # LangChain 配置
     langchain_tracing_v2: bool = False
-    langchain_api_key: Optional[str] = None
+    langchain_api_key: str | None = None
     langchain_project: str = "site-info-extractor"
     
     # 模型配置
@@ -45,7 +44,7 @@ class Settings(BaseSettings):
         env_file_encoding = "utf-8"
         case_sensitive = False
     
-    def get_llm_config(self) -> dict:
+    def get_llm_config(self) -> dict[str, object]:
         """获取 LLM 配置
         
         Returns:
@@ -57,7 +56,7 @@ class Settings(BaseSettings):
             "max_tokens": self.max_tokens
         }
     
-    def get_browser_config(self) -> dict:
+    def get_browser_config(self) -> dict[str, object]:
         """获取浏览器配置
         
         Returns:

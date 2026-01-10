@@ -6,6 +6,7 @@
 from typing import List, Dict, Any
 from bs4 import BeautifulSoup
 import re
+import json
 
 
 class ContentExtractor:
@@ -130,9 +131,9 @@ class ContentExtractor:
         scripts = soup.find_all('script', type='application/ld+json')
         for script in scripts:
             try:
-                import json
-                data = json.loads(script.string)
-                structured_data.append(data)
+                if script.string is not None:
+                    data = json.loads(script.string)
+                    structured_data.append(data)
             except (json.JSONDecodeError, TypeError):
                 continue
         
