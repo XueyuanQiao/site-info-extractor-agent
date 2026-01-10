@@ -23,14 +23,18 @@ class Settings(BaseSettings):
     max_tokens: int = 2000
     
     # 各提供商特定模型配置
+    
+    # 免费
     gemini_model_name: str = "gemini-2.5-flash"
-    openai_model_name: str = "gpt-4o-mini"
-    anthropic_model_name: str = "claude-3-5-sonnet-20241022"
     groq_model_name: str = "llama-3.3-70b-versatile"
     # siliconflow支持多种模型，可选（https://cloud.siliconflow.cn/me/models）
     siliconflow_model_name: str = "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"
     # 讯飞模型可选（https://maas.xfyun.cn/account）
     xunfei_model_name: str = "Qwen3-1.7B"
+
+    # 付费
+    openai_model_name: str = "gpt-4o-mini"
+    anthropic_model_name: str = "claude-3-5-sonnet-20241022"
 
     # 浏览器配置
     browser_headless: bool = True
