@@ -4,6 +4,5 @@
 """
 
 from .browser_tool import BrowserTool
-from .extractors import ContentExtractor
 
-__all__ = ["BrowserTool", "ContentExtractor"]
+__all__ = ["BrowserTool"]

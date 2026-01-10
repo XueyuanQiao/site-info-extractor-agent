@@ -5,7 +5,6 @@
 
 from typing import Optional, Dict, Any
 from playwright.async_api import async_playwright, Browser, Page
-import asyncio
 
 
 class BrowserTool:
@@ -106,20 +105,3 @@ class BrowserTool:
                 metadata[key] = await element.get_attribute("content") or ""
         
         return metadata
-    
-    async def screenshot(self, url: str, output_path: str):
-        """对页面进行截图
-        
-        Args:
-            url: 目标 URL
-            output_path: 截图保存路径
-        """
-        if not self.browser:
-            raise RuntimeError("Browser not started. Call start() or use async context manager.")
-        
-        page = await self.browser.new_page()
-        try:
-            await page.goto(url, wait_until="networkidle")
-            await page.screenshot(path=output_path, full_page=True)
-        finally:
-            await page.close()

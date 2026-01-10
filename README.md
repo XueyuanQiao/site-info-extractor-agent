@@ -36,7 +36,6 @@ cp .env.example .env
 - `GOOGLE_API_KEY`: Google API 密钥（必需 - Gemini 模型）
 - `OPENAI_API_KEY`: OpenAI API 密钥（可选）
 - `ANTHROPIC_API_KEY`: Anthropic API 密钥（可选）
-- `TAVILY_API_KEY`: Tavily 搜索 API 密钥（可选）
 
 **⚠️ 安全注意事项**：
 - `.env` 文件已被 `.gitignore` 保护，不会被提交到 Git 仓库
