@@ -33,7 +33,8 @@ cp .env.example .env
 ```
 
 编辑 `.env` 文件，填写必要的 API 密钥：
-- `OPENAI_API_KEY`: OpenAI API 密钥（必需）
+- `GOOGLE_API_KEY`: Google API 密钥（必需 - Gemini 模型）
+- `OPENAI_API_KEY`: OpenAI API 密钥（可选）
 - `ANTHROPIC_API_KEY`: Anthropic API 密钥（可选）
 - `TAVILY_API_KEY`: Tavily 搜索 API 密钥（可选）
 
@@ -41,6 +42,12 @@ cp .env.example .env
 - `.env` 文件已被 `.gitignore` 保护，不会被提交到 Git 仓库
 - 永远不要将包含真实 API 密钥的 `.env` 文件提交到 GitHub
 - 如果意外提交了敏感文件，请使用 [git-crypt](https://github.com/AGWA/git-crypt) 或删除历史记录
+
+**获取 Google API Key**：
+1. 访问 [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. 登录 Google 账户
+3. 创建新的 API Key
+4. 将 API Key 添加到 `.env` 文件的 `GOOGLE_API_KEY` 中
 
 ### 运行项目
 
@@ -72,6 +79,13 @@ site-info-extractor-agent/
 - 支持多种提取策略
 - 可扩展的工具系统
 - 基于 LangGraph 的状态管理
+- 支持多个 LLM 提供商（Google Gemini、OpenAI、Anthropic）
+
+## 支持的模型
+
+- **Google Gemini**: gemini-1.5-flash（默认）、gemini-1.5-pro
+- **OpenAI**: gpt-4o-mini、gpt-4o、gpt-3.5-turbo
+- **Anthropic**: claude-3-5-sonnet-20241022、claude-3-opus-20240229
 
 ## 开发说明
 

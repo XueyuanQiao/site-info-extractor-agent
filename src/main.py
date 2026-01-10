@@ -68,12 +68,17 @@ async def test_agent():
         }
 
         # 添加可用的 API Key
-        if settings.openai_api_key:
+        if settings.google_api_key:
+            config["google_api_key"] = settings.google_api_key
+            console.print(f"[green]✓ 使用 Google Gemini API[/green]")
+        elif settings.openai_api_key:
             config["openai_api_key"] = settings.openai_api_key
+            console.print(f"[green]✓ 使用 OpenAI API[/green]")
         elif settings.anthropic_api_key:
             config["anthropic_api_key"] = settings.anthropic_api_key
+            console.print(f"[green]✓ 使用 Anthropic API[/green]")
         else:
-            raise ValueError("未找到可用的 API Key，请在 .env 文件中配置 OPENAI_API_KEY 或 ANTHROPIC_API_KEY")
+            raise ValueError("未找到可用的 API Key，请在 .env 文件中配置 GOOGLE_API_KEY、OPENAI_API_KEY 或 ANTHROPIC_API_KEY")
 
         agent: SiteExtractorAgent = SiteExtractorAgent(config)
 
@@ -107,7 +112,9 @@ async def interactive_mode():
     }
 
     # 添加可用的 API Key
-    if settings.openai_api_key:
+    if settings.google_api_key:
+        config["google_api_key"] = settings.google_api_key
+    elif settings.openai_api_key:
         config["openai_api_key"] = settings.openai_api_key
     elif settings.anthropic_api_key:
         config["anthropic_api_key"] = settings.anthropic_api_key
@@ -150,9 +157,9 @@ async def main():
         print_settings()
 
         # 检查 API Key
-        if not settings.openai_api_key and not settings.anthropic_api_key:
+        if not settings.google_api_key and not settings.openai_api_key and not settings.anthropic_api_key:
             console.print("[red]警告: 未检测到 API Key，请在 .env 文件中配置[/red]")
-            console.print("[dim]可以使用 OPENAI_API_KEY 或 ANTHROPIC_API_KEY[/dim]\n")
+            console.print("[dim]可以使用 GOOGLE_API_KEY、OPENAI_API_KEY 或 ANTHROPIC_API_KEY[/dim]\n")
 
         # 运行基本测试
         await test_agent()

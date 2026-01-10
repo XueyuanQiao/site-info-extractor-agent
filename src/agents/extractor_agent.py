@@ -11,7 +11,6 @@ from collections.abc import Sequence
 from pathlib import Path
 from langgraph.graph import StateGraph, END
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage
-from langchain_openai import ChatOpenAI
 
 # 抑制 Python 3.14 与 Pydantic V1 的兼容性警告
 warnings.filterwarnings(
@@ -24,8 +23,23 @@ warnings.filterwarnings(
 SYSTEM_PROMPT_FILE = Path(__file__).parent.parent / "prompts" / "system_prompt.md"
 SYSTEM_PROMPT = SYSTEM_PROMPT_FILE.read_text(encoding="utf-8") if SYSTEM_PROMPT_FILE.exists() else "你是一个专业的网站信息提取专家。"
 
-# 动态导入 Anthropic（如果可用）
+# 动态导入 LLM 提供商
+GEMINI_AVAILABLE = False
+OPENAI_AVAILABLE = False
 ANTHROPIC_AVAILABLE = False
+
+try:
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    GEMINI_AVAILABLE = True
+except ImportError:
+    pass
+
+try:
+    from langchain_openai import ChatOpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    pass
+
 try:
     from langchain_anthropic import ChatAnthropic
     ANTHROPIC_AVAILABLE = True
@@ -59,8 +73,15 @@ class SiteExtractorAgent:
         Returns:
             LLM 实例
         """
-        # 优先使用 OpenAI
-        if self.config.get("openai_api_key"):
+        # 优先使用 Google Gemini
+        if self.config.get("google_api_key") and GEMINI_AVAILABLE:
+            return ChatGoogleGenerativeAI(
+                model=self.config.get("model_name", "gemini-1.5-flash"),
+                temperature=self.config.get("temperature", 0.0),
+                api_key=self.config["google_api_key"]
+            )
+        # 备用 OpenAI
+        elif self.config.get("openai_api_key") and OPENAI_AVAILABLE:
             return ChatOpenAI(
                 model=self.config.get("model_name", "gpt-4o-mini"),
                 temperature=self.config.get("temperature", 0.0),
@@ -74,7 +95,7 @@ class SiteExtractorAgent:
                 api_key=self.config["anthropic_api_key"]
             )
         else:
-            raise ValueError("需要提供 openai_api_key 或 anthropic_api_key")
+            raise ValueError("需要提供 google_api_key、openai_api_key 或 anthropic_api_key")
     
     def _build_graph(self):
         """构建 LangGraph 工作流

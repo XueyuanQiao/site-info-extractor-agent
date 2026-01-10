@@ -68,18 +68,18 @@ class TestSiteExtractorAgent:
     def agent(self):
         """创建 Agent 实例"""
         config = {
-            "model_name": "gpt-4o-mini",
-            "openai_api_key": "test-key"
+            "model_name": "gemini-1.5-flash",
+            "google_api_key": "test-key"
         }
         return SiteExtractorAgent(config)
 
     def test_agent_initialization(self, agent):
         """测试 Agent 初始化"""
         assert agent is not None
-        assert agent.config["model_name"] == "gpt-4o-mini"
+        assert agent.config["model_name"] == "gemini-1.5-flash"
 
     @pytest.mark.asyncio
-    @patch("src.agents.extractor_agent.ChatOpenAI")
+    @patch("src.agents.extractor_agent.ChatGoogleGenerativeAI")
     async def test_extract_with_mock(self, mock_llm, agent):
         """测试提取功能（使用 Mock LLM）"""
         # 设置 mock 返回值

@@ -8,8 +8,9 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     """应用设置类"""
-    
+
     # API Keys
+    google_api_key: str | None = None
     openai_api_key: str | None = None
     anthropic_api_key: str | None = None
     tavily_api_key: str | None = None
@@ -20,7 +21,7 @@ class Settings(BaseSettings):
     langchain_project: str = "site-info-extractor"
     
     # 模型配置
-    model_name: str = "gpt-4o-mini"
+    model_name: str = "gemini-1.5-flash"
     temperature: float = 0.0
     max_tokens: int = 2000
     
