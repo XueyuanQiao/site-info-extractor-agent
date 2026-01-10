@@ -29,9 +29,14 @@ env/
 ENV/
 .venv
 
-# Environment Variables
+# Environment Variables - 保护 API 密钥不被上传
 .env
 .env.local
+.env.*.local
+.env.*.secret
+
+# 允许提交示例文件
+!.env.example
 
 # IDE
 .vscode/
@@ -57,3 +62,18 @@ logs/
 # Playwright
 playwright-report/
 test-results/
+
+# 临时文件和缓存
+.cache/
+*.tmp
+*.temp
+*.bak
+
+# API 密钥和机密文件（额外保护）
+*_key.*
+*_secret.*
+*_api_key.*
+credentials.json
+service-account.json
+.pypirc
+.netrc
