@@ -77,6 +77,8 @@ async def interactive_mode():
     def signal_handler(_sig: int, _frame: object) -> None:
         exit_flag['value'] = True
         console.print("\n[yellow]正在退出...[/yellow]")
+        # 立即退出程序，避免继续执行
+        sys.exit(0)
 
     signal.signal(signal.SIGINT, signal_handler)
 
