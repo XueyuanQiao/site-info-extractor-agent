@@ -28,7 +28,8 @@ class Settings(BaseSettings):
     gemini_model_name: str = "gemini-2.5-flash"
     groq_model_name: str = "llama-3.3-70b-versatile"
     # siliconflow支持多种模型，可选（https://cloud.siliconflow.cn/me/models）
-    siliconflow_model_name: str = "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"
+    #siliconflow_model_name: str = "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"
+    siliconflow_model_name: str = "tencent/Hunyuan-MT-7B"
     # 讯飞模型可选（https://maas.xfyun.cn/account）
     xunfei_model_name: str = "Qwen3-1.7B"
 

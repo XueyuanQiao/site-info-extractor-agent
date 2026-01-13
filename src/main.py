@@ -63,7 +63,7 @@ async def interactive_mode():
     if settings.groq_api_key:
         available_models.append(("groq", f"Groq (默认: {settings.groq_model_name})"))
     if settings.siliconflow_api_key:
-        available_models.append(("siliconflow", f"SiliconFlow (慢，默认: {settings.siliconflow_model_name})"))
+        available_models.append(("siliconflow", f"SiliconFlow (模型多，默认: {settings.siliconflow_model_name})"))
     if settings.xunfei_api_key:
         available_models.append(("xunfei", f"讯飞 (不好用，默认: {settings.xunfei_model_name})"))
 
