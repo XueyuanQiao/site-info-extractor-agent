@@ -20,7 +20,7 @@ def get_weather(city: str) -> str:
 
 # 确保 Google API 密钥存在
 if not settings.google_api_key:
-    print("\n⚠️  Google API key not found!")
+    print("\n Google API key not found!")
     print("Please set GOOGLE_API_KEY in your .env file.")
     print("\nExiting...\n")
     exit()
