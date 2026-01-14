@@ -66,6 +66,8 @@ async def interactive_mode():
         available_models.append(("siliconflow", f"SiliconFlow (模型多，默认: {settings.siliconflow_model_name})"))
     if settings.xunfei_api_key:
         available_models.append(("xunfei", f"讯飞 (不好用，默认: {settings.xunfei_model_name})"))
+    if settings.cerebras_api_key:
+        available_models.append(("cerebras", f"Cerebras (默认: {settings.cerebras_model_name})"))
 
     if not available_models:
         console.print("[red]未找到可用的 API Key，无法启动交互模式[/red]")
@@ -134,6 +136,9 @@ async def interactive_mode():
                             elif selected_model == "xunfei":
                                 config["model_name"] = settings.xunfei_model_name
                                 config["xunfei_api_key"] = settings.xunfei_api_key
+                            elif selected_model == "cerebras":
+                                config["model_name"] = settings.cerebras_model_name
+                                config["cerebras_api_key"] = settings.cerebras_api_key
                             break
                         else:
                             console.print("[red]无效的选项，请重新输入[/red]")
@@ -170,6 +175,9 @@ async def interactive_mode():
         elif selected_model == "xunfei":
             config["model_name"] = settings.xunfei_model_name
             config["xunfei_api_key"] = settings.xunfei_api_key
+        elif selected_model == "cerebras":
+            config["model_name"] = settings.cerebras_model_name
+            config["cerebras_api_key"] = settings.cerebras_api_key
 
     agent = SiteExtractorAgent(config)
 

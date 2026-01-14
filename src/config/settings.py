@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     groq_api_key: str | None = None
     siliconflow_api_key: str | None = None
     xunfei_api_key: str | None = None
+    cerebras_api_key: str | None = None
 
     # 模型配置
     model_name: str = "gemini-2.5-flash"
@@ -32,6 +33,8 @@ class Settings(BaseSettings):
     siliconflow_model_name: str = "tencent/Hunyuan-MT-7B"
     # 讯飞模型可选（https://maas.xfyun.cn/account）
     xunfei_model_name: str = "Qwen3-1.7B"
+    # cerebras模型可选（https://cloud.cerebras.ai/platform/org_xd58erkrmhtmnkwpdmrvyy8x/models）
+    cerebras_model_name: str = "gpt-oss-120b"
 
     # 付费
     openai_model_name: str = "gpt-4o-mini"

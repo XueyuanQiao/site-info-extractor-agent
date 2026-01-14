@@ -39,6 +39,7 @@ ANTHROPIC_AVAILABLE = False
 GROQ_AVAILABLE = False
 SILICONFLOW_AVAILABLE = False
 XUNFEI_AVAILABLE = False
+CEREBRAS_AVAILABLE = False
 
 # 导入 Google Gemini
 try:
@@ -51,9 +52,10 @@ except ImportError:
 try:
     from langchain_openai import ChatOpenAI
     OPENAI_AVAILABLE = True
-    # SiliconFlow 和讯飞也使用 OpenAI 兼容的 API
+    # SiliconFlow、讯飞和 Cerebras 也使用 OpenAI 兼容的 API
     SILICONFLOW_AVAILABLE = True
     XUNFEI_AVAILABLE = True
+    CEREBRAS_AVAILABLE = True
 except ImportError:
     pass
 
@@ -173,12 +175,21 @@ class SiteExtractorAgent:
                 base_url="https://maas-api.cn-huabei-1.xf-yun.com/v2"
             )
         
+        # 备用 Cerebras
+        elif self.config.get("cerebras_api_key") and CEREBRAS_AVAILABLE:
+            return ChatOpenAI(
+                model=self.config.get("model_name"),
+                temperature=self.config.get("temperature", 0.0),
+                api_key=self.config["cerebras_api_key"],
+                base_url="https://api.cerebras.ai/v1"
+            )
+        
         # 无可用的 API Key
         else:
             raise ValueError(
                 "需要提供以下 API Key 之一: "
                 "google_api_key、openai_api_key、anthropic_api_key、"
-                "groq_api_key、siliconflow_api_key 或 xunfei_api_key"
+                "groq_api_key、siliconflow_api_key、xunfei_api_key 或 cerebras_api_key"
             )
 
     def _build_graph(self):
