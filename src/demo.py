@@ -2,7 +2,6 @@
 
 import sys
 import os
-import json
 import warnings
 
 # 过滤冗余警告
