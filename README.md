@@ -33,9 +33,13 @@ cp .env.example .env
 ```
 
 编辑 `.env` 文件，填写必要的 API 密钥：
-- `GOOGLE_API_KEY`: Google API 密钥（必需 - Gemini 模型）
+- `GOOGLE_API_KEY`: Google API 密钥（推荐，默认使用 Gemini 模型）
 - `OPENAI_API_KEY`: OpenAI API 密钥（可选）
 - `ANTHROPIC_API_KEY`: Anthropic API 密钥（可选）
+- `GROQ_API_KEY`: Groq API 密钥（可选）
+- `SILICONFLOW_API_KEY`: SiliconFlow API 密钥（可选，OpenAI 兼容）
+- `XUNFEI_API_KEY`: 讯飞星火 MaaS API 密钥（可选，OpenAI 兼容）
+- `CEREBRAS_API_KEY`: Cerebras API 密钥（可选，OpenAI 兼容）
 
 **⚠️ 安全注意事项**：
 - `.env` 文件已被 `.gitignore` 保护，不会被提交到 Git 仓库
@@ -51,7 +55,7 @@ cp .env.example .env
 ### 运行项目
 
 ```bash
-python src/main.py
+python -m src.main
 ```
 
 ## 项目结构
@@ -59,31 +63,31 @@ python src/main.py
 ```
 site-info-extractor-agent/
 ├── src/
-│   ├── agents/           # Agent 实现
-│   ├── tools/            # 工具集合
-│   ├── prompts/          # 提示词
-│   ├── graph/            # LangGraph 工作流
-│   ├── config/           # 配置管理
-│   └── main.py           # 入口文件
+│   ├── agents/           # Agent 实现（SiteExtractorAgent 等）
+│   ├── tools/            # 工具集合（BrowserTool 等）
+│   ├── prompts/          # 提示词（system prompt 等）
+│   ├── config/           # 配置管理（Settings）
+│   ├── demo.py           # LLM 调用示例
+│   └── main.py           # 入口文件（CLI 交互）
 ├── tests/                # 测试文件
 ├── requirements.txt      # 依赖列表
 ├── .env.example          # 环境变量示例
-└── README.md            # 项目说明
+└── README.md             # 项目说明
 ```
 
 ## 主要功能
 
-- 基于浏览器的网页信息提取
+- 基于浏览器的网页信息提取（使用 Playwright 先抓取页面，再将抓取结果与提示词一次性传给 LLM）
 - 智能内容解析和结构化
 - 支持多种提取策略
 - 可扩展的工具系统
-- 基于 LangGraph 的状态管理
-- 支持多个 LLM 提供商（Google Gemini、OpenAI、Anthropic）
+- 基于 LangGraph 的状态管理（当前为单节点工作流，可扩展多步流程）
+- 支持多个 LLM 提供商（Google Gemini、OpenAI、Anthropic、Groq、SiliconFlow、讯飞、Cerebras）
 
 ## 支持的模型
 
-- **Google Gemini**: gemini-2.5-flash-exp（默认）、gemini-1.5-flash、gemini-1.5-pro、gemini-pro
-- **OpenAI**: gpt-4o-mini、gpt-4o、gpt-3.5-turbo
+- **Google Gemini**: gemini-2.5-flash（默认）、gemini-1.5-flash、gemini-1.5-pro、gemini-pro
+- **OpenAI**: gpt-4o-mini 等
 - **Anthropic**: claude-3-5-sonnet-20241022、claude-3-opus-20240229
 
 **注意**：

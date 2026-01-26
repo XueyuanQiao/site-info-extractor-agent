@@ -17,6 +17,8 @@ from collections.abc import Sequence
 from pathlib import Path
 from langgraph.graph import StateGraph, END
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage
+from src.tools.browser_tool import BrowserTool
+from config.settings import settings
 
 # 抑制 Python 3.14 与 Pydantic V1 的兼容性警告
 warnings.filterwarnings(
@@ -85,6 +87,7 @@ class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], operator.add]
     extracted_info: dict[str, Any]
     url: str | None
+
 
 
 class SiteExtractorAgent:
@@ -240,90 +243,110 @@ class SiteExtractorAgent:
 
     async def _extract_node(self, state: AgentState) -> AgentState:
         """提取节点：从网站提取信息
-
-        执行实际的信息提取逻辑：
-        1. 构建消息列表
-        2. 调用 LLM 进行提取
-        3. 解析 LLM 响应
-        4. 处理提取结果或错误
-
+        
+        先使用 BrowserTool 抓取网页内容，然后将系统提示词与网页信息一并交给 LLM，
+        通过一次调用完成结构化信息提取。
+        
         Args:
             state: 当前状态
-
+        
         Returns:
             更新后的状态，包含提取结果
         """
         try:
-            # 构建消息列表：系统提示 + 历史消息
+            url = state["url"]
+            if not url:
+                raise ValueError("url 不能为空")
+
+            # 如果用户未提供协议，则默认使用 https://
+            if not url.startswith(("http://", "https://")):
+                url = "https://" + url
+
+            # 使用浏览器抓取网页内容
+            async with BrowserTool(headless=settings.browser_headless) as browser:
+                page_data = await browser.fetch_page(url)
+
+            page_title = page_data.get("title") or ""
+            page_text = page_data.get("text") or ""
+            metadata = page_data.get("metadata") or {}
+            metadata_text = json.dumps(metadata, ensure_ascii=False)
+
+            # 构建一次性调用的提示词：系统提示词 + 带网页内容的用户消息
+            human_parts: list[str] = []
+            human_parts.append(f"目标网站 URL：{url}")
+            if page_title:
+                human_parts.append(f"页面标题：{page_title}")
+            human_parts.append("以下是抓取到的页面正文文本：")
+            human_parts.append(page_text)
+            if metadata:
+                human_parts.append("\n以下是抓取到的页面元数据（JSON）：")
+                human_parts.append(metadata_text)
+
+            human_prompt = (
+                "请严格按照系统提示词中的要求，基于下面提供的网页抓取结果进行信息提取，"
+                "并只输出一个合法的 JSON 对象，不要添加任何解释性文字或 Markdown 代码块。\n\n"
+                + "\n\n".join(human_parts)
+            )
+
             messages = [
                 SystemMessage(content=SYSTEM_PROMPT),
-            ] + list(state["messages"])
+                HumanMessage(content=human_prompt),
+            ]
 
-            # 调用 LLM 执行提取
+            # 单次调用 LLM，直接基于网页内容生成结构化结果
             response = await self.llm.ainvoke(messages)
 
-            # 初始化提取结果
             extracted_info = {
-                "url": state["url"],
-                "status": "success"
+                "url": url,
+                "status": "success",
             }
 
-            # 尝试解析响应为 JSON
             try:
-                # 确保获取字符串类型的 content
                 content = response.content
                 if isinstance(content, list):
                     content = " ".join(str(item) for item in content)
                 elif not isinstance(content, str):
                     content = str(content)
 
-                # 尝试从响应中提取 JSON
+                # 保留对 ```json 包裹的兼容解析，防止模型仍然输出代码块
                 if "```json" in content:
-                    # 提取 ```json 和 ``` 之间的内容
                     json_start = content.find("```json") + 7
                     json_end = content.find("```", json_start)
                     json_str = content[json_start:json_end].strip()
                 elif "```" in content:
-                    # 提取 ``` 和 ``` 之间的内容
                     json_start = content.find("```") + 3
                     json_end = content.find("```", json_start)
                     json_str = content[json_start:json_end].strip()
                 else:
-                    # 直接使用响应内容
                     json_str = content
 
-                # 解析 JSON 数据
                 extracted_data = json.loads(json_str)
                 extracted_info.update(extracted_data)
-                
+
             except (json.JSONDecodeError, Exception) as parse_error:
-                # 解析失败，使用原始文本
                 extracted_info["raw_response"] = str(response.content)
                 extracted_info["status"] = "parsed_error"
                 extracted_info["parse_error"] = str(parse_error)
 
-            # 更新消息历史
             updated_messages = list(state["messages"]) + [response]
-            
-            # 返回更新后的状态
+
             return {
                 "messages": updated_messages,
                 "extracted_info": extracted_info,
-                "url": state["url"]
+                "url": url,
             }
-            
+
         except Exception as e:
-            # 处理执行错误
             error_response = AIMessage(content=f"提取失败: {str(e)}")
             updated_messages = list(state["messages"]) + [error_response]
-            
-            # 返回错误状态
+
             return {
                 "messages": updated_messages,
                 "extracted_info": {
-                    "url": state["url"],
+                    "url": state.get("url"),
                     "status": "error",
-                    "error": str(e)
+                    "error": str(e),
                 },
-                "url": state["url"]
+                "url": state.get("url"),
             }
+    
